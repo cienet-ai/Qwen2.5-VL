@@ -1,6 +1,11 @@
 import re
 
 # Define placeholders for dataset paths
+grounding_dataset = {
+    "annotation_path": "grounding_dataset.json",
+    "data_path": ".",
+}
+
 CAMBRIAN_737K = {
     "annotation_path": "PATH_TO_CAMBRIAN_737K_ANNOTATION",
     "data_path": "",
@@ -32,6 +37,7 @@ data_dict = {
     "mp_doc": MP_DOC,
     "clevr_mc": CLEVR_MC,
     "videochatgpt": VIDEOCHATGPT,
+    "grounding_dataset": grounding_dataset,
 }
 
 

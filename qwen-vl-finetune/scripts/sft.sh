@@ -1,26 +1,38 @@
 #!/bin/bash
 
+# 多 GPU 设置
+export CUDA_VISIBLE_DEVICES=0,1
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export NCCL_P2P_DISABLE=1
+export NCCL_IB_DISABLE=1
+export WANDB_MODE=disabled
+
+NPROC_PER_NODE=2
+
 # Distributed training configuration
 MASTER_ADDR=${MASTER_ADDR:-"127.0.0.1"}
 MASTER_PORT=${MASTER_PORT:-$(shuf -i 20001-29999 -n 1)}
 NNODES=${WORLD_SIZE:-1}
 
 # DeepSpeed configuration
-deepspeed=./scripts/zero3.json
+deepspeed=scripts/zero3_24gb.json
+# deepspeed=./scripts/zero3.json
 
 # Model configuration
 llm=Qwen/Qwen2.5-VL-3B-Instruct  # Using HuggingFace model ID
 
 # Training hyperparameters
 lr=2e-7
-batch_size=4
+# batch_size=4
+# grad_accum_steps=4
+batch_size=2
 grad_accum_steps=4
 
 # Training entry point
 entry_file=qwenvl/train/train_qwen.py
 
 # Dataset configuration (replace with public dataset names)
-datasets=public_dataset1,public_dataset2
+datasets=grounding_dataset
 
 # Output configuration
 run_name="qwen2vl-baseline"
@@ -32,17 +44,17 @@ args="
     --model_name_or_path "${llm}" \
     --dataset_use ${datasets} \
     --data_flatten True \
-    --tune_mm_vision False \
-    --tune_mm_mlp True \
-    --tune_mm_llm True \
+    --tune_mm_vision true \
+    --tune_mm_mlp false \
+    --tune_mm_llm false \
     --bf16 \
     --output_dir ${output_dir} \
-    --num_train_epochs 0.5 \
+    --num_train_epochs 50 \
     --per_device_train_batch_size ${batch_size} \
     --per_device_eval_batch_size $((batch_size*2)) \
     --gradient_accumulation_steps ${grad_accum_steps} \
-    --max_pixels 50176 \
-    --min_pixels 784 \
+    --max_pixels 1003520 \
+    --min_pixels 200704 \
     --eval_strategy "no" \
     --save_strategy "steps" \
     --save_steps 1000 \

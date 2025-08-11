@@ -45,11 +45,11 @@ args="
     --dataset_use ${datasets} \
     --data_flatten True \
     --tune_mm_vision true \
-    --tune_mm_mlp false \
+    --tune_mm_mlp true \
     --tune_mm_llm false \
     --bf16 \
     --output_dir ${output_dir} \
-    --num_train_epochs 50 \
+    --num_train_epochs 100 \
     --per_device_train_batch_size ${batch_size} \
     --per_device_eval_batch_size $((batch_size*2)) \
     --gradient_accumulation_steps ${grad_accum_steps} \
